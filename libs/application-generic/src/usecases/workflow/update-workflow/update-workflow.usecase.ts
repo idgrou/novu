@@ -24,8 +24,7 @@ import {
 
 import { AnalyticsService, ContentService, InvalidateCacheService } from '../../../services';
 import { UpdateWorkflowCommand } from './update-workflow.command';
-import { isVariantEmpty } from '../../../utils/variants';
-import { ApiException, PlatformException } from '../../../utils/exceptions';
+import { ApiException, isVariantEmpty, PlatformException } from '../../../utils';
 import {
   CreateChange,
   CreateChangeCommand,
@@ -34,6 +33,8 @@ import {
   DeletePreferencesCommand,
   DeletePreferencesUseCase,
   GetPreferences,
+  GetWorkflowByIdsCommand,
+  GetWorkflowByIdsUseCase,
   NotificationStep,
   NotificationStepVariantCommand,
   UpsertPreferences,
@@ -51,6 +52,7 @@ import {
 } from '../../message-template';
 import { Instrument, InstrumentUsecase } from '../../../instrumentation';
 import { ResourceValidatorService } from '../../../services/resource-validator.service';
+import { NotificationStep, NotificationStepVariantCommand } from '../../../value-objects';
 
 /**
  * @deprecated - use `UpsertWorkflow` instead
@@ -557,9 +559,7 @@ export class UpdateWorkflow {
       ...(step.variants || []).flatMap((variant) => variant._templateId),
     ]);
 
-    const removedStepsIds = existingStepsIds.filter((id) => !newStepsIds.includes(id));
-
-    return removedStepsIds;
+    return existingStepsIds.filter((id) => !newStepsIds.includes(id));
   }
 
   private async updateVariants(

@@ -21,20 +21,14 @@ import {
   NotificationGroupRepository,
   NotificationStepEntity,
   NotificationTemplateEntity,
-  NotificationTemplateRepository,
 } from '@novu/dal';
 import {
-  ControlSchemas,
   ControlValuesLevelEnum,
   DEFAULT_WORKFLOW_PREFERENCES,
   slugify,
-  StepCreateDto,
-  StepIssuesDto,
-  StepUpdateDto,
   UserSessionData,
   WorkflowCreationSourceEnum,
   WorkflowOriginEnum,
-  WorkflowResponseDto,
   WorkflowTypeEnum,
 } from '@novu/shared';
 
@@ -42,7 +36,8 @@ import { stepTypeToControlSchema } from '../../shared';
 import { computeWorkflowStatus } from '../../shared/compute-workflow-status';
 import { BuildStepIssuesUsecase } from '../build-step-issues/build-step-issues.usecase';
 import { GetWorkflowCommand, GetWorkflowUseCase } from '../get-workflow';
-import { UpsertWorkflowCommand, UpsertWorkflowDataCommand } from './upsert-workflow.command';
+import { UpsertStepDataCommand, UpsertWorkflowCommand, UpsertWorkflowDataCommand } from './upsert-workflow.command';
+import { ControlSchemasDto, StepIssuesDto, WorkflowResponseDto } from '../../dtos';
 
 @Injectable()
 export class UpsertWorkflowUseCase {
@@ -55,8 +50,7 @@ export class UpsertWorkflowUseCase {
     private buildStepIssuesUsecase: BuildStepIssuesUsecase,
     private controlValuesRepository: ControlValuesRepository,
     private upsertControlValuesUseCase: UpsertControlValuesUseCase,
-    private analyticsService: AnalyticsService,
-    private notificationTemplateRepository: NotificationTemplateRepository
+    private analyticsService: AnalyticsService
   ) {}
 
   @InstrumentUsecase()
@@ -181,7 +175,7 @@ export class UpsertWorkflowUseCase {
   private async mapSteps(
     workflowOrigin: WorkflowOriginEnum,
     user: UserSessionData,
-    commandWorkflowSteps: Array<StepCreateDto | StepUpdateDto>,
+    commandWorkflowSteps: Array<UpsertStepDataCommand>,
     persistedWorkflow?: NotificationTemplateEntity | undefined
   ): Promise<NotificationStep[]> {
     const steps: NotificationStep[] = [];
@@ -228,10 +222,11 @@ export class UpsertWorkflowUseCase {
     workflowOrigin: WorkflowOriginEnum,
     user: UserSessionData,
     persistedWorkflow: NotificationTemplateEntity | undefined,
-    step: StepUpdateDto | StepCreateDto
+    step: UpsertStepDataCommand
   ): Promise<NotificationStep> {
     const foundPersistedStep = this.getPersistedStepIfFound(persistedWorkflow, step);
-    const controlSchemas: ControlSchemas = foundPersistedStep?.template?.controls || stepTypeToControlSchema[step.type];
+    const controlSchemas: ControlSchemasDto =
+      foundPersistedStep?.template?.controls || stepTypeToControlSchema[step.type];
     const issues: StepIssuesDto = await this.buildStepIssuesUsecase.execute({
       workflowOrigin,
       user,
@@ -268,7 +263,7 @@ export class UpsertWorkflowUseCase {
 
   private getPersistedStepIfFound(
     persistedWorkflow: NotificationTemplateEntity | undefined,
-    stepUpdateRequest: StepUpdateDto | StepCreateDto
+    stepUpdateRequest: UpsertStepDataCommand
   ) {
     if (!persistedWorkflow?.steps) {
       return;
@@ -281,8 +276,8 @@ export class UpsertWorkflowUseCase {
     }
   }
 
-  private isStepUpdateDto(obj: StepUpdateDto | StepCreateDto): obj is StepUpdateDto {
-    return typeof obj === 'object' && obj !== null && !!(obj as StepUpdateDto)._id;
+  private isStepUpdateDto(obj: UpsertStepDataCommand) {
+    return obj !== null && !!obj._id;
   }
 
   private async getNotificationGroup(environmentId: string): Promise<string | undefined> {
@@ -353,7 +348,7 @@ export class UpsertWorkflowUseCase {
 
   private findControlValueInRequest(
     step: NotificationStepEntity,
-    steps: (StepCreateDto | StepUpdateDto)[] | StepCreateDto[]
+    steps: UpsertStepDataCommand[]
   ): Record<string, unknown> | undefined | null {
     return steps.find((stepRequest) => {
       if (this.isStepUpdateDto(stepRequest)) {
@@ -362,13 +357,6 @@ export class UpsertWorkflowUseCase {
 
       return stepRequest.name === step.name;
     })?.controlValues;
-  }
-
-  private async countWorkflows(command: UpsertWorkflowCommand): Promise<number> {
-    return this.notificationTemplateRepository.count({
-      _environmentId: command.user.environmentId,
-      _organizationId: command.user.organizationId,
-    });
   }
 }
 
