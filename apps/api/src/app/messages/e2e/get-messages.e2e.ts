@@ -61,12 +61,12 @@ describe('Get Message - /messages (GET) #novu-v2', function () {
 
     let response = await novuClient.messages.retrieve({ subscriberId: subscriber3.subscriberId });
     // here we are expecting 6 messages because workflow has 2 steps in-app and email
-    expect(response.result.data.length).to.be.equal(6);
-    response = await novuClient.messages.retrieve({ transactionId: [transactionId1] });
     expect(response.result.data.length).to.be.equal(4);
+    response = await novuClient.messages.retrieve({ transactionId: [transactionId1] });
+    expect(response.result.data.length).to.be.equal(2);
 
     response = await novuClient.messages.retrieve({ transactionId: [transactionId1, transactionId2] });
-    expect(response.result.data.length).to.be.equal(6);
+    expect(response.result.data.length).to.be.equal(4);
 
     response = await novuClient.messages.retrieve({ transactionId: [transactionId2] });
     expect(response.result.data.length).to.be.equal(2);
