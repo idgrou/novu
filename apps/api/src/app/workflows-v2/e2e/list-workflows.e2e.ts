@@ -98,7 +98,7 @@ describe('List Workflows - /workflows (GET) #novu-v2', function () {
       const returnedWorkflow = result.workflows[0];
 
       expect(returnedWorkflow).to.include({
-        _id: createdWorkflow.id,
+        id: createdWorkflow.id,
         name: workflowName,
         workflowId: createdWorkflow.workflowId,
         status: WorkflowStatusEnum.Active,

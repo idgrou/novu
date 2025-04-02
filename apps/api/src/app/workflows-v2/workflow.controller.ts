@@ -243,7 +243,7 @@ export class WorkflowController {
     @Param('stepId', ParseSlugIdPipe) stepIdOrInternalId: string,
     @Body() generatePreviewRequestDto: GeneratePreviewRequestDto
   ): Promise<GeneratePreviewResponseDto> {
-    return await this.previewUsecase.execute(
+    const generatePreviewResponseDto = await this.previewUsecase.execute(
       PreviewCommand.create({
         user,
         workflowIdOrInternalId,
@@ -251,6 +251,8 @@ export class WorkflowController {
         generatePreviewRequestDto,
       })
     );
+
+    return generatePreviewResponseDto;
   }
 
   @Get('/:workflowId/steps/:stepId')

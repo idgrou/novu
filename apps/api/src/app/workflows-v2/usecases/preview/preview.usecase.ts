@@ -35,10 +35,7 @@ import { buildVariables } from '../../util/build-variables';
 import { mergeCommonObjectKeys, multiplyArrayItems } from '../../util/utils';
 import { buildVariablesSchema } from '../../util/create-schema';
 import { isObjectMailyJSONContent } from '../../../environments-v1/usecases/output-renderers/maily-to-liquid/wrap-maily-in-liquid.command';
-import { GeneratePreviewResponseDto } from '../../dtos/generate-preview-response.dto';
-import { StepResponseDto } from '../../dtos/step.response.dto';
-import { JSONSchemaDto } from '../../dtos/json-schema.dto';
-import { PreviewPayloadDto } from '../../dtos';
+import { GeneratePreviewResponseDto, JSONSchemaDto, PreviewPayloadDto, StepResponseDto } from '../../dtos';
 
 const LOG_CONTEXT = 'GeneratePreviewUsecase';
 
