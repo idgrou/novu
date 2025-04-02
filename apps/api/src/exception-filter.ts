@@ -5,6 +5,7 @@ import { randomUUID } from 'node:crypto';
 import { captureException } from '@sentry/node';
 import { ZodError } from 'zod';
 import { InternalServerErrorException } from '@nestjs/common/exceptions/internal-server-error.exception';
+import { ThrottlerException } from '@nestjs/throttler';
 import { ErrorDto, ValidationErrorDto } from './error-dto';
 
 const ERROR_MSG_500 = `Internal server error, contact support and provide them with the errorId`;
@@ -56,6 +57,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
   }
 
   private buildErrorResponse(exception: unknown, request: Request): ErrorDto {
+    if (exception instanceof HttpException && exception.name === 'ThrottlerException') {
+      return this.handlerThrotlerException(request);
+    }
+
     if (exception instanceof ZodError) {
       return this.handleZod(exception, request);
     }
@@ -150,8 +155,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     return { ...errorDto, errors: { general: { messages: exception.response.message, value: 'No Value Recorded' } } };
   }
-}
 
+  private handlerThrotlerException(request: Request) {
+    return this.buildErrorDto(request, HttpStatus.TOO_MANY_REQUESTS, 'API rate limit exceeded', {});
+  }
+}
 function hasMessage(response: unknown): response is { message: string } {
   return typeof response === 'object' && response !== null && 'message' in response;
 }
