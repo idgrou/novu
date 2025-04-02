@@ -55,23 +55,21 @@ describe('Workflow Step Preview - POST /:workflowId/step/:stepId/preview #novu-v
     });
 
     expect(result).to.deep.equal({
-      data: {
-        result: {
-          preview: {
-            subject: 'Welcome firstName',
-            // cspell:disable-next-line
-            body: 'Hello firstName lastName, Welcome to ORGANIZATIONNAME!',
-          },
-          type: 'in_app',
+      result: {
+        preview: {
+          subject: 'Welcome firstName',
+          // cspell:disable-next-line
+          body: 'Hello firstName lastName, Welcome to ORGANIZATIONNAME!',
         },
-        previewPayloadExample: {
-          subscriber: {
-            firstName: 'firstName',
-            lastName: 'lastName',
-          },
-          payload: {
-            organizationName: 'organizationName',
-          },
+        type: 'in_app',
+      },
+      previewPayloadExample: {
+        subscriber: {
+          firstName: 'firstName',
+          lastName: 'lastName',
+        },
+        payload: {
+          organizationName: 'organizationName',
         },
       },
     });
