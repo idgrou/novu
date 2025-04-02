@@ -727,6 +727,7 @@
     "dotenvcreate",
     "querybuilder",
     "liquified",
+    "Throtler",
     "autoload",
     "novugo",
     "titleize",

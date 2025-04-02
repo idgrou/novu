@@ -20,7 +20,6 @@ import {
   Instrument,
   InstrumentUsecase,
   PinoLogger,
-  WorkflowInternalResponseDto,
 } from '@novu/application-generic';
 import { actionStepSchemas, channelStepSchemas } from '@novu/framework/internal';
 import { JSONContent as MailyJSONContent } from '@maily-to/render';
