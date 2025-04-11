@@ -319,7 +319,7 @@ export const ConfigureStepForm = (props: ConfigureStepFormProps) => {
               </SidebarContent>
               <Separator />
 
-              {firstControlsError || firstIntegrationError ? (
+              {firstControlsError && firstIntegrationError ? (
                 <>
                   <ConfigureStepTemplateIssuesContainer>
                     {firstControlsError && (
