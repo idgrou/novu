@@ -68,7 +68,7 @@
     "@segment/analytics-next": "^1.48.0",
     "@sentry/react": "^7.40.0",
     "@sentry/tracing": "^7.40.0",
-    "@storybook/addon-docs": "^7.4.2",
+    "@storybook/addon-docs": "^8.2.0",
     "@storybook/theming": "^7.4.2",
     "@stripe/react-stripe-js": "^2.5.0",
     "@stripe/stripe-js": "^2.4.0",
